@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signal Indicator</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0f172a">
+<style>
+body{margin:0;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;position:sticky;top:0;background:#0f172a}
+h1{font-size:18px;margin:0}button{background:#1e293b;color:#e2e8f0;border:0;padding:8px 12px;border-radius:8px}
+.c{margin:10px 16px;padding:14px;background:#1e293b;border-radius:12px}
+.t{display:flex;justify-content:space-between;font-weight:700;font-size:17px}
+.BUY{color:#22c55e}.SELL{color:#ef4444}.g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;font-size:14px}
+.m{color:#94a3b8;font-size:12px;margin-top:8px}.e{text-align:center;color:#94a3b8;padding:40px 16px}
+</style></head><body>
+<header><h1>Signals</h1><button onclick="load()">Refresh</button></header>
+<div id="l"></div>
+<p class="m" style="text-align:center">Not financial advice. Test on a demo account first.</p>
+<script>
+async function load(){
+ const l=document.getElementById("l");
+ try{
+  const d=await (await fetch("signals.json?t="+Date.now())).json();
+  l.innerHTML=d.length?d.map(s=>`<div class="c"><div class="t"><span>${s.pair}</span><span class="${s.side}">${s.side}</span></div>
+  <div class="g"><div>Entry: ${s.entry}</div><div>SL: ${s.sl}</div><div>TP1: ${s.tp1}</div><div>TP2: ${s.tp2}</div></div>
+  <div class="m">${s.time}</div></div>`).join(""):'<div class="e">No signals yet. Waiting for the next cross.</div>';
+ }catch(e){l.innerHTML='<div class="e">Could not load signals.</div>'}
+}
+load();setInterval(load,60000);
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script></body></html>
